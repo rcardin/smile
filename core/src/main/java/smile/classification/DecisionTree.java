@@ -142,6 +142,10 @@ public class DecisionTree implements SoftClassifier<double[]>, Serializable {
      */
     private transient int[][] order;
 
+    public int predictLeafId(double[] x) {
+        return root.predictLeafId(x);
+    }
+
     /**
      * Trainer for decision tree classifiers.
      */
@@ -360,6 +364,28 @@ public class DecisionTree implements SoftClassifier<double[]>, Serializable {
                         return trueChild.predict(x, posteriori);
                     } else {
                         return falseChild.predict(x, posteriori);
+                    }
+                } else {
+                    throw new IllegalStateException("Unsupported attribute type: " + attributes[splitFeature].getType());
+                }
+            }
+        }
+
+        public int predictLeafId(double[] x) {
+            if (trueChild == null && falseChild == null) {
+                return this.hashCode();
+            } else {
+                if (attributes[splitFeature].getType() == Attribute.Type.NOMINAL) {
+                    if (x[splitFeature] == splitValue) {
+                        return trueChild.predictLeafId(x);
+                    } else {
+                        return falseChild.predictLeafId(x);
+                    }
+                } else if (attributes[splitFeature].getType() == Attribute.Type.NUMERIC) {
+                    if (x[splitFeature] <= splitValue) {
+                        return trueChild.predictLeafId(x);
+                    } else {
+                        return falseChild.predictLeafId(x);
                     }
                 } else {
                     throw new IllegalStateException("Unsupported attribute type: " + attributes[splitFeature].getType());

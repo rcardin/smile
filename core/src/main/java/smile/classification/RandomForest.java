@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Attribute;
@@ -697,6 +699,12 @@ public class RandomForest implements SoftClassifier<double[]>, Serializable {
         }
         
         return Math.whichMax(y);
+    }
+
+    public Integer[] predictLeafIds(double[] x) {
+        return trees.stream()
+                    .map(tree -> tree.tree.predictLeafId(x))
+                    .toArray(Integer[]::new);
     }
     
     @Override
